@@ -84,3 +84,96 @@ module.exports.deleteUser = async (req, res) => {
     }
   }
 };
+
+/*module.exports.followUser = async (req, res) => {
+  try {
+    const userToFollow = await UserModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { following: req.body.id },
+      },
+      { new: true }
+    );
+
+    res.status(204).send(); // Envoi d'un statut 204 No Content pour une mise à jour réussie
+  } catch (error) {
+    console.error(
+      "Une erreur s'est produite lors de la mise à jour de l'utilisateur :",
+      error
+    );
+    res.status(500).json({
+      message:
+        "Une erreur s'est produite lors de la mise à jour de l'utilisateur.",
+    });
+  }
+};*/
+
+module.exports.followUser = async (req, res) => {
+  if (ObjectId.isValid(req.params.id)) {
+    try {
+      // Je suis en train de suivre l'utilisateur
+      const userToFollow = await UserModel.findByIdAndUpdate(
+        req.params.id,
+        {
+          $push: { following: req.body.following },
+        },
+        { new: true }
+      );
+
+      //Je deviens son follower(son disciple en retour)
+      const userToFollowed = await UserModel.findByIdAndUpdate(
+        req.body.following,
+        {
+          $push: { followers: req.params.id },
+        },
+        { new: true }
+      );
+
+      res.status(200).json(userToFollow);
+    } catch (error) {
+      console.error(
+        "Une erreur s'est produite lors de la mise à jour de l'utilisateur :",
+        error
+      );
+      res.status(500).json({
+        message:
+          "Une erreur s'est produite lors de la mise à jour de l'utilisateur.",
+      });
+    }
+  }
+};
+
+module.exports.unfollowUser = async (req, res) => {
+  if (ObjectId.isValid(req.params.id)) {
+    try {
+      // Ne plus suivre l'utilisateur passé dans le body
+      const userToUnfollow = await UserModel.findByIdAndUpdate(
+        req.params.id,
+        {
+          $pull: { following: req.body.following },
+        },
+        { new: true }
+      );
+
+      // Ne plus être un follower de l'utilisateur
+      const userToUnfollowed = await UserModel.findByIdAndUpdate(
+        req.body.following,
+        {
+          $pull: { followers: req.params.id },
+        },
+        { new: true }
+      );
+
+      res.status(200).json(userToUnfollow);
+    } catch (error) {
+      console.error(
+        "Une erreur s'est produite lors de la mise à jour de l'utilisateur :",
+        error
+      );
+      res.status(500).json({
+        message:
+          "Une erreur s'est produite lors de la mise à jour de l'utilisateur.",
+      });
+    }
+  }
+};
