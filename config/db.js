@@ -1,5 +1,6 @@
 // Import the mongoose module
 const mongoose = require("mongoose");
+require("dotenv").config({ path: "./config/.env" });
 
 // Set `strictQuery: false` to globally opt into filtering by properties that aren't in the schema
 // Included because it removes preparatory warnings for Mongoose 7.
@@ -7,7 +8,12 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
 // Define the database URL to connect to.
-const mongoDB = "mongodb+srv://osiris:osiris@cluster0.z3a2i.mongodb.net/source";
+const mongoDB =
+  "mongodb+srv://" +
+  process.env.MONGODB_USERNAME +
+  ":" +
+  process.env.MONGODB_PASSWORD +
+  "@cluster0.z3a2i.mongodb.net/source";
 
 // Wait for database to connect, logging an error if there is a problem
 main().catch((err) => console.log(err));
