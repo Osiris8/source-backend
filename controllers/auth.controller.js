@@ -51,3 +51,8 @@ module.exports.signIn = async (req, res) => {
       .json({ message: "An error occurred while processing your request." });
   }
 };
+
+module.exports.logout = (req, res) => {
+  res.clearCookie("token"); // Supprime le cookie contenant le token
+  res.status(200).json({ message: "User logged out successfully." });
+};
