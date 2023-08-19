@@ -27,24 +27,6 @@ module.exports.userInfo = async (req, res) => {
   }
 };
 
-/*module.exports.updateUser = async (req, res) => {
-  try {
-    const user = await UserModel.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: req.body,
-      },
-      { new: true }
-    );
-    res.status(200).json(user);
-  } catch (error) {
-    console.error("Erreur lors de la mise à jour de l'utilisateur:", error);
-    res.status(500).json({
-      message:
-        "Une erreur s'est produite lors de la mise à jour de l'utilisateur.",
-    });
-  }
-};*/
 module.exports.updateUser = async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     try {
@@ -84,29 +66,6 @@ module.exports.deleteUser = async (req, res) => {
     }
   }
 };
-
-/*module.exports.followUser = async (req, res) => {
-  try {
-    const userToFollow = await UserModel.findByIdAndUpdate(
-      req.params.id,
-      {
-        $push: { following: req.body.id },
-      },
-      { new: true }
-    );
-
-    res.status(204).send(); // Envoi d'un statut 204 No Content pour une mise à jour réussie
-  } catch (error) {
-    console.error(
-      "Une erreur s'est produite lors de la mise à jour de l'utilisateur :",
-      error
-    );
-    res.status(500).json({
-      message:
-        "Une erreur s'est produite lors de la mise à jour de l'utilisateur.",
-    });
-  }
-};*/
 
 module.exports.followUser = async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
