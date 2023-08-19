@@ -6,9 +6,9 @@ const auth = require("../middleware/auth.middleware");
 ///Auth authentification
 router.post("/register", authController.signUp);
 router.post("/login", authController.signIn);
-router.get("/logout", authController.logout);
-router.get("/", userController.getAllUsers);
-router.get("/:id", userController.userInfo);
+router.get("/logout", auth.authenticateMiddleware, authController.logout);
+router.get("/", auth.authenticateMiddleware, userController.getAllUsers);
+router.get("/:id", auth.authenticateMiddleware, userController.userInfo);
 router.put("/:id", userController.updateUser);
 router.delete("/:id", userController.deleteUser);
 router.patch("/follow/:id", userController.followUser);
