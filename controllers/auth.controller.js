@@ -23,9 +23,7 @@ module.exports.signIn = async (req, res) => {
     const user = await UserModel.findOne({ email });
 
     if (!user) {
-      return res
-        .status(401)
-        .json({ message: "Email or password is incorrect." });
+      return res.status(401).json({ message: "Email is not founds." });
     }
 
     try {
