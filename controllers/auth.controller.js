@@ -1,6 +1,7 @@
 const UserModel = require("../models/user.model");
-const jwt = require("jsonwebtoken");
 require("dotenv").config({ path: "./config/.env" });
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const createToken = (id) => {
   const expiresIn = "1h"; // Durée de validité du token
