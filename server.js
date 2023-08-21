@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 require("dotenv").config({ path: "./config/.env" });
 require("./config/db");
 const userRoutes = require("./routes/user.routes");
+const postRoutes = require("./routes/post.routes");
 const app = express();
 
 app.use(bodyParser.json());
@@ -12,6 +13,7 @@ app.use(cookieParser());
 
 //routes
 app.use("/api/user", userRoutes);
+app.use("/api/post", postRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Listening on port ${process.env.PORT}`);
