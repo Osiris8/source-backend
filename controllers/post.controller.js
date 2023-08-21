@@ -58,3 +58,19 @@ module.exports.updatePost = async (req, res) => {
     res.status(404).json({ message: "Post not found." });
   }
 };
+
+module.exports.deletePost = async (req, res) => {
+  if (ObjectId.isValid(req.params.id)) {
+    try {
+      await PostModel.findByIdAndDelete(req.params.id);
+      res.status(200).json({ message: "Post deleted successfully." });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: "An error occurred while processing your request." });
+    }
+  } else {
+    res.status(404).json({ message: "Post not found." });
+  }
+};
