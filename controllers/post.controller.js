@@ -138,7 +138,7 @@ module.exports.unlikePost = async (req, res) => {
 module.exports.commentPost = async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     try {
-      const post = await PostModel.findById(req.params.id);
+      const post = await PostModel.findById(req.params.id); // Id du post
       const updatedPost = await PostModel.findByIdAndUpdate(
         req.params.id,
         {
@@ -153,6 +153,40 @@ module.exports.commentPost = async (req, res) => {
         },
         { new: true }
       );
+      res.status(200).json(updatedPost);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: "An error occurred while processing your request." });
+    }
+  }
+};
+
+module.exports.editComment = async (req, res) => {
+  if (ObjectId.isValid(req.params.id)) {
+    try {
+      const postId = req.params.id; // Id du post
+      console.log(postId);
+
+      const commentId = req.body.commentId; // Id du commentaire à éditer
+      console.log(commentId);
+
+      const updatedPost = await PostModel.findOneAndUpdate(
+        { _id: postId, "comments._id": commentId }, // Identifier le commentaire par son indice
+        {
+          $set: {
+            "comments.$.comment": req.body.comment, // Mettre à jour le texte du commentaire
+            "comments.$.time": Date.now(), // Mettre à jour le timestamp
+          },
+        },
+        { new: true }
+      );
+
+      if (!updatedPost) {
+        return res.status(404).json({ message: "Post or comment not found." });
+      }
+
       res.status(200).json(updatedPost);
     } catch (error) {
       console.error(error);
