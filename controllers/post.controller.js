@@ -106,3 +106,31 @@ module.exports.likePost = async (req, res) => {
     res.status(404).json({ message: "Post not found." });
   }
 };
+
+module.exports.unlikePost = async (req, res) => {
+  if (ObjectId.isValid(req.params.id)) {
+    try {
+      const post = await PostModel.findById(req.params.id);
+      const updatedPost = await PostModel.findByIdAndUpdate(
+        req.params.id,
+        {
+          $pull: { likers: req.body.id },
+        },
+        { new: true }
+      );
+      await userModel.findByIdAndUpdate(
+        req.body.id,
+        {
+          $pull: { likes: req.params.id },
+        },
+        { new: true }
+      );
+      res.status(200).json(updatedPost);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: "An error occurred while processing your request." });
+    }
+  }
+};
