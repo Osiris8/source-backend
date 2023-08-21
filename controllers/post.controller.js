@@ -134,3 +134,31 @@ module.exports.unlikePost = async (req, res) => {
     }
   }
 };
+
+module.exports.commentPost = async (req, res) => {
+  if (ObjectId.isValid(req.params.id)) {
+    try {
+      const post = await PostModel.findById(req.params.id);
+      const updatedPost = await PostModel.findByIdAndUpdate(
+        req.params.id,
+        {
+          $push: {
+            comments: {
+              commenterId: req.body.commenterId,
+              commenterPseudo: req.body.commenterPseudo,
+              comment: req.body.comment,
+              time: Date.now(),
+            },
+          },
+        },
+        { new: true }
+      );
+      res.status(200).json(updatedPost);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: "An error occurred while processing your request." });
+    }
+  }
+};
