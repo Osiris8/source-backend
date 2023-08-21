@@ -4,7 +4,7 @@ const ObjectId = require("mongoose").Types.ObjectId;
 
 module.exports.readPost = async (req, res) => {
   try {
-    const posts = await PostModel.find();
+    const posts = await PostModel.find().sort({ createdAt: -1 });
     res.status(200).json(posts);
   } catch (error) {
     console.error(error);
