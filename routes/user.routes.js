@@ -2,6 +2,10 @@ const router = require("express").Router();
 const authController = require("../controllers/auth.controller");
 const userController = require("../controllers/user.controller");
 const auth = require("../middleware/auth.middleware");
+const {
+  uploadProfileImage,
+  updateProfileImage,
+} = require("../controllers/upload.controller");
 
 ///Auth authentification
 router.post("/register", authController.signUp);
@@ -13,4 +17,8 @@ router.put("/:id", userController.updateUser);
 router.delete("/:id", userController.deleteUser);
 router.patch("/follow/:id", userController.followUser);
 router.patch("/unfollow/:id", userController.unfollowUser);
+
+// Route pour télécharger la photo de profil
+//router.post("/upload/:id", uploadProfileImage, updateProfileImage);
+
 module.exports = router;
