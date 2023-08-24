@@ -2,6 +2,7 @@ const router = require("express").Router();
 const authController = require("../controllers/auth.controller");
 const userController = require("../controllers/user.controller");
 const auth = require("../middleware/auth.middleware");
+const uploadProfile = require("../controllers/upload.controller");
 
 ///Auth authentification
 router.post("/register", authController.signUp);
@@ -20,6 +21,12 @@ router.patch(
   "/unfollow/:id",
   auth.authenticateMiddleware,
   userController.unfollowUser
+);
+
+router.post(
+  "/uploadProfile",
+  auth.authenticateMiddleware,
+  uploadProfile.updateProfilePicture
 );
 
 module.exports = router;
