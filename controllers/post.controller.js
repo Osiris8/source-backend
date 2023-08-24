@@ -16,10 +16,10 @@ module.exports.readPost = async (req, res) => {
 
 module.exports.createPost = async (req, res) => {
   try {
-    const { postID, message, comments, likers, video } = req.body;
+    const { posterId, message, comments, likers, video } = req.body;
 
     const newPost = new PostModel({
-      postID,
+      posterId,
       message,
       comments,
       likers,
