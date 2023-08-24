@@ -1,62 +1,76 @@
 const multer = require("multer");
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
-const UserModel = require("../models/user.model");
+const userModel = require("../models/user.model"); // Assurez-vous de spécifier le bon chemin
 
-// Configuration de multer pour gérer le téléchargement d'images
+// Configuration de Multer pour le stockage des fichiers
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "../uploads/profiles"); // Spécifiez le répertoire où les images seront téléchargées
+  destination: (req, file, cb) => {
+    cb(null, "../uploads/profiles"); // Répertoire où les fichiers seront stockés
   },
-  filename: function (req, file, cb) {
-    const extension = path.extname(file.originalname);
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, "profile-" + uniqueSuffix + extension); // Nom du fichier d'image après téléchargement
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `${Date.now()}${ext}`);
   },
 });
 
 const upload = multer({ storage: storage });
 
-// Contrôleur pour télécharger la photo de profil d'un utilisateur
-const uploadProfileImage = upload.single("profileImage"); // "profileImage" doit correspondre au champ de téléchargement dans le formulaire
-
-const updateProfileImage = async (req, res) => {
-  const userId = req.params.id; // Supposons que l'ID de l'utilisateur soit passé en tant que paramètre d'URL
-
+// Contrôleur pour la modification de la photo de profil
+const updateProfilePhoto = async (req, res) => {
   try {
-    // Vérifier si l'utilisateur existe
-    const user = await UserModel.findById(userId);
+    const userId = req.params.id; // Supposons que vous passez l'ID utilisateur dans les paramètres d'URL
+    const user = await userModel.findById(userId).select("-password");
+
     if (!user) {
-      return res.status(404).json({ message: "Utilisateur non trouvé" });
+      return res
+        .status(404)
+        .json({ message: "L'utilisateur n'a pas été trouvé." });
     }
 
+    // Vérifier si l'utilisateur a déjà une photo de profil
     if (user.picture) {
-      const oldImagePath = path.join(__dirname, user.picture);
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
-        console.log("je retire l'image existante");
-      } else {
-        console.log("je ne retire pas l'image existante");
+      // Supprimer l'ancienne photo de profil du disque local
+      try {
+        await fs.unlink(user.picture);
+      } catch (error) {
+        console.error(
+          "Erreur lors de la suppression de l'ancienne photo :",
+          error
+        );
       }
-      console.log(oldImagePath);
     }
 
-    // Mettre à jour l'URL de la photo de profil avec le chemin de l'image téléchargée
-    user.picture = req.file.path; // req.file contient les informations sur le fichier téléchargé
-    await user.save();
+    // Traitement de la mise à jour de la photo de profil
+    upload.single("profilePhoto")(req, res, async (err) => {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({
+          message:
+            "Une erreur s'est produite lors du téléchargement du fichier.",
+        });
+      } else if (err) {
+        return res
+          .status(500)
+          .json({ message: "Une erreur interne s'est produite." });
+      }
 
-    res
-      .status(200)
-      .json({ message: "Photo de profil mise à jour avec succès", user: user });
-  } catch (error) {
-    res.status(500).json({
-      message: "Erreur lors de la mise à jour de la photo de profil",
-      error: error.message,
+      // Mise à jour de l'URL de la photo de profil dans le modèle de l'utilisateur
+      if (req.file) {
+        user.picture = req.file.path; // Mise à jour de l'URL de la photo dans le modèle
+        await user.save();
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Photo de profil mise à jour avec succès." });
     });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Une erreur interne s'est produite." });
   }
 };
 
 module.exports = {
-  uploadProfileImage,
-  updateProfileImage,
+  updateProfilePhoto,
 };
