@@ -8,16 +8,12 @@ const postRoutes = require("./routes/post.routes");
 const cors = require("cors");
 const app = express();
 
-// Configuration des options CORS
+// Autorisez les requêtes provenant de l'origine http://localhost:3000
 const corsOptions = {
-  origin: process.env.CLIENT_URL, // Remplacez ceci par l'URL de votre client
-  credentials: true,
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
+  origin: "http://localhost:3000",
+  credentials: true, // Permet d'envoyer les cookies et les headers d'authentification
 };
 
-// Utilisation de CORS avec les options spécifiées
 app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
