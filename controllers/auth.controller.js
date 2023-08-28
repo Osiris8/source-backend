@@ -9,7 +9,7 @@ const createToken = (id) => {
 };
 
 module.exports.signUp = async (req, res) => {
-  const { pseudo, email, password } = req.body;
+  const { firstname, lastname, email, password } = req.body;
   try {
     // Vérifier si un utilisateur avec cet e-mail existe déjà
     const existingUser = await UserModel.findOne({ email });
@@ -20,7 +20,12 @@ module.exports.signUp = async (req, res) => {
     }
 
     // Créer un nouvel utilisateur
-    const user = await UserModel.create({ pseudo, email, password });
+    const user = await UserModel.create({
+      firstname,
+      lastname,
+      email,
+      password,
+    });
 
     // Ne renvoyez pas le mot de passe dans la réponse
     user.password = undefined;
