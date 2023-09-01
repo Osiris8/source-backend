@@ -46,6 +46,7 @@ module.exports.updateProfilePicture = async (req, res) => {
       ) {
         // Supprimer l'ancienne photo de profil du dossier local
         const oldImagePath = path.join(__dirname, `../${user.image}`);
+        console.log(oldImagePath);
         if (fs.existsSync(oldImagePath)) {
           fs.unlinkSync(oldImagePath);
         }
