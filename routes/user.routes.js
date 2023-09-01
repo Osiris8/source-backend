@@ -6,6 +6,7 @@ const uploadProfile = require("../controllers/upload.controller");
 const verifyUser = require("../controllers/verifyuser.controller"); // Assurez-vous que le chemin d'importation est correct
 
 ///Auth authentification
+
 router.get("/verify", verifyUser.verifyUser);
 router.post("/register", authController.signUp);
 router.post("/login", authController.signIn);
@@ -26,8 +27,8 @@ router.patch(
   userController.unfollowUser
 );
 
-router.post(
-  "/uploadProfile",
+router.put(
+  "/uploadProfile/:id",
   auth.authenticateMiddleware,
   uploadProfile.updateProfilePicture
 );
