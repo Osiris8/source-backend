@@ -1,8 +1,8 @@
-const mongoosse = require("mongoose");
+const mongoose = require("mongoose");
 const { isEmail } = require("validator");
 const bcrypt = require("bcrypt");
 
-const userSchema = new mongoosse.Schema({
+const userSchema = new mongoose.Schema({
   firstname: {
     type: String,
     required: true,
@@ -33,12 +33,11 @@ const userSchema = new mongoosse.Schema({
     max: 1024,
     minLength: 6,
   },
-  picture: {
+  image: {
     type: String,
     default:
       "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
   },
-
   biographie: {
     type: String,
     default: "Aucune biographie disponible",
@@ -54,11 +53,13 @@ const userSchema = new mongoosse.Schema({
   },
 });
 
-//Lancer cette fonction avant d'enregister
+// Lancer cette fonction avant d'enregister
 userSchema.pre("save", async function (next) {
   try {
-    const salt = await bcrypt.genSalt();
-    this.password = await bcrypt.hash(this.password, salt);
+    if (this.isModified("password")) {
+      const salt = await bcrypt.genSalt();
+      this.password = await bcrypt.hash(this.password, salt);
+    }
     next();
   } catch (error) {
     next(error);
@@ -73,5 +74,5 @@ userSchema.methods.login = async function (password) {
   throw Error("Incorrect password");
 };
 
-const UserModel = mongoosse.model("user", userSchema);
+const UserModel = mongoose.model("user", userSchema);
 module.exports = UserModel;
