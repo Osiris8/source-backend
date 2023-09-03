@@ -17,20 +17,20 @@ module.exports.signUp = async (req, res) => {
       return res
         .status(400)
         .json({ message: "Cet e-mail est déjà associé à un compte." });
+    } else {
+      // Créer un nouvel utilisateur
+      const user = await UserModel.create({
+        firstname,
+        lastname,
+        email,
+        password,
+      });
+
+      // Ne renvoyez pas le mot de passe dans la réponse
+      user.password = undefined;
+
+      res.status(201).json(user);
     }
-
-    // Créer un nouvel utilisateur
-    const user = await UserModel.create({
-      firstname,
-      lastname,
-      email,
-      password,
-    });
-
-    // Ne renvoyez pas le mot de passe dans la réponse
-    user.password = undefined;
-
-    res.status(201).json(user);
   } catch (error) {
     // Gérer les erreurs spécifiques
     if (error.name === "ValidationError") {
