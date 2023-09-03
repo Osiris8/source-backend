@@ -79,5 +79,5 @@ userSchema.methods.login = async function (password) {
   throw Error("Incorrect password");
 };
 
-const UserModel = mongoose.model("user", userSchema);
+const UserModel = mongoose.model("usermodel", userSchema);
 module.exports = UserModel;
