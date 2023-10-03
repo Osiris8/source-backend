@@ -1,6 +1,7 @@
 const PostModel = require("../models/post.model");
 const userModel = require("../models/user.model");
 const ObjectId = require("mongoose").Types.ObjectId;
+const multer = require("multer");
 
 module.exports.readPost = async (req, res) => {
   try {
@@ -14,27 +15,63 @@ module.exports.readPost = async (req, res) => {
   }
 };
 
+//Controlleur pour la création d'un post
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "../frontend/public/uploads/posts"); // Spécifiez le dossier de destination où les images seront stockées.
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage }).single("picture");
+
 module.exports.createPost = async (req, res) => {
-  try {
-    const { posterId, message, comments, likers, video } = req.body;
+  upload(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      // Gérer les erreurs de Multer
+      return res.status(500).json({
+        message: "Une erreur est survenue lors du téléchargement de l'image.",
+      });
+    } else if (err) {
+      // Gérer d'autres erreurs
+      return res.status(500).json({
+        message: "Une erreur est survenue lors du traitement de l'image.",
+      });
+    }
 
-    const newPost = new PostModel({
-      posterId,
-      message,
-      comments,
-      likers,
-      video,
-    });
+    try {
+      const { posterId, message, comments, likers, video } = req.body;
 
-    const savedPost = await newPost.save();
+      // Vérifiez si un fichier image a été téléchargé
+      let picture = ""; // Initialisez la variable picture ici
 
-    res.status(201).json(savedPost);
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while saving the post." });
-  }
+      if (req.file) {
+        picture = req.file.path.replace(/\\/g, "/"); // Chemin de l'image sur le disque
+        console.log(picture);
+      }
+
+      const newPost = new PostModel({
+        posterId,
+        message,
+        comments,
+        likers,
+        picture, // Utilisez la variable picture pour enregistrer le chemin de l'image
+        video,
+      });
+
+      const savedPost = await newPost.save();
+
+      res.status(201).json(savedPost);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: "An error occurred while saving the post." });
+    }
+  });
 };
 
 module.exports.updatePost = async (req, res) => {
