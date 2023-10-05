@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const createToken = (id) => {
-  const expiresIn = "1h"; // Durée de validité du token
+  const expiresIn = "72h"; // Durée de validité du token
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn });
 };
 
