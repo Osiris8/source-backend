@@ -50,7 +50,6 @@ module.exports.createPost = async (req, res) => {
 
       if (req.file) {
         picture = req.file.path.replace(/\\/g, "/"); // Chemin de l'image sur le disque
-        console.log(picture);
       }
 
       const newPost = new PostModel({
@@ -236,10 +235,8 @@ module.exports.deleteComment = async (req, res) => {
   if (ObjectId.isValid(req.params.id)) {
     try {
       const postId = req.params.id; // Id du post
-      console.log(postId);
 
       const commentId = req.body.commentId; // Id du commentaire à éditer
-      console.log(commentId);
 
       const updatedPost = await PostModel.findByIdAndUpdate(
         postId,
