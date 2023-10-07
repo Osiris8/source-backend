@@ -9,8 +9,9 @@ const cors = require("cors");
 const app = express();
 
 // Autorisez les requêtes provenant de l'origine http://localhost:3000
+
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000", "https://source-frontend-psi.vercel.app/"],
   credentials: true, // Permet d'envoyer les cookies et les headers d'authentification
 };
 
